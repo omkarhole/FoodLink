@@ -8,7 +8,7 @@ const app = express();
 
 // Middleware
 app.use(cors({
-  origin:["https://food-link-five.vercel.app","http://localhost:5173/"],
+  origin:["https://food-link-five.vercel.app","http://localhost:5173"],
   methods:["GET","POST","DELETE","PUT","PATCH"],
   credentials:true,
 })); // Allow requests from frontend
