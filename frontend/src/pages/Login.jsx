@@ -300,6 +300,7 @@
 import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import axios from "axios";
+// import user from "../../../backend/models/user";
 
 const Login = () => {
   const navigate = useNavigate();
@@ -403,10 +404,26 @@ const Login = () => {
         email,
         password,
       });
+      console.log("Login Response:", response.data);
+
 
       
       localStorage.setItem("token", response.data.token);
-      navigate("/dashboard"); 
+      localStorage.setItem("role", response.data.role);
+      // localStorage.setItem("userId", response.data.user.id);
+      // navigate("/dashboard"); 
+      localStorage.setItem("role", response.data.user.role);
+      if (response.data.user.role === "donor") {
+  navigate("/donor-dashboard");
+} else if (response.data.user.role === "receiver") {
+  navigate("/receiver-dashboard");
+}
+// if (user.role === "donor") {
+//       navigate("/donor-dashboard");
+//     } else {
+//       navigate("/receiver-dashboard");
+//     }
+
     } catch (err) {
       console.log(err);
       if (err.response && err.response.data) {

@@ -8,7 +8,7 @@ const foodRequestSchema = new mongoose.Schema({
   },
   requesterId: {
     type: mongoose.Schema.Types.ObjectId,
-    ref: "User",
+    ref: "user",
     required: true,
   },
   status: {
@@ -20,8 +20,11 @@ const foodRequestSchema = new mongoose.Schema({
     type: Date,
     default: Date.now,
   },
+  userId:{
+    type:String
+  }
 });
 
 const FoodRequest = mongoose.model("FoodRequest", foodRequestSchema);
 
-export default foodRequest;
+export default FoodRequest;

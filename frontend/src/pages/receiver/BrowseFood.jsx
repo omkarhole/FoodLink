@@ -171,10 +171,12 @@
 
 import React, { useEffect, useState } from "react";
 import axios from "axios";
+import { useNavigate } from "react-router-dom";
 
 const BrowseFood = () => {
   const [foods, setFoods] = useState([]);
   const [loading, setLoading] = useState(true);
+  const navigate = useNavigate();
 
   // 🔹 Fetch food data from backend
   useEffect(() => {
@@ -265,7 +267,9 @@ const handleRequest = async (foodId) => {
       }
     );
 
-    alert(res.data.message);
+    alert(res.data.message || "Request sent!");
+    navigate("/receiver/my-requests");
+
   } catch (err) {
     console.error("Error requesting food:", err);
     alert("Failed to request food");

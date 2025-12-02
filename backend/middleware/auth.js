@@ -27,17 +27,25 @@ const authenticateToken = (req, res, next) => {
   const token = req.headers.authorization?.split(" ")[1];
 
   if (!token) {
-    return res.status(401).json({ message: "Access denied, token missing" });
+    return res.status(401).json({ message: "no token provided" });
   }
 
-  jwt.verify(token, "MISHTHI", (err, user) => {
-    if (err) return res.status(403).json({ message: "Invalid token" });
+//   jwt.verify(token, "MISHTHI", (err, user) => {
+//     if (err) return res.status(403).json({ message: "Invalid token" });
 
-    req.user = user;
-    next();
-  });
+//     req.user = user;
+//     next();
+//   });
+// };
+
+try {
+  const decoded = jwt.verify(token,"MISHTHI");
+  req.user = decoded;
+  next();
+} catch (err) {
+  res.status(401).json({message : "invalid token"});
+}
 };
-
 export default authenticateToken;
 
 

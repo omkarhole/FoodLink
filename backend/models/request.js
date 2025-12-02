@@ -88,7 +88,7 @@ import mongoose from "mongoose";
 
 const requestSchema = new mongoose.Schema({
   food: { type: mongoose.Schema.Types.ObjectId, ref: "Food", required: true },
-  receiver: { type: mongoose.Schema.Types.ObjectId, ref: "User", required: true },
+  receiver: { type: mongoose.Schema.Types.ObjectId, ref: "user", required: true },
   status: { type: String, enum: ["Pending", "Approved", "Rejected"], default: "Pending" },
   createdAt: { type: Date, default: Date.now },
 });

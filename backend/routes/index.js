@@ -146,47 +146,95 @@
 
 // const router = express.Router();
 
-import express from "express";
+import express, { response } from "express";
 const router = express.Router();
 
+// import User from "../models/user.js";
+// import Food from "../models/food.js";
+// import Request from "../models/request.js";
+// import bcrypt from "bcryptjs";
+// import jwt from "jsonwebtoken";
+// import authenticateToken from "../middleware/auth.js";
+// import FoodRequest from "../models/foodrequest.js";
 import User from "../models/user.js";
 import Food from "../models/food.js";
 import Request from "../models/request.js";
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
 import authenticateToken from "../middleware/auth.js";
-import FoodRequest from "../models/FoodRequest.js";
+import FoodRequest from "../models/foodrequest.js";
 
 
-
+router.get("/receiver/data", authenticateToken, (req, res) => {
+  if (req.user.role !== "receiver") {
+    return res.status(403).json({ message: "Access denied" });
+  }
+  res.json({ message: "Receiver data loaded" });
+});
+router.get("/donor/data", authenticateToken, (req, res) => {
+  if (req.user.role !== "donor") {
+    return res.status(403).json({ message: "Access denied" });
+  }
+  res.json({ message: "Donor data loaded" });
+});
 
 
 // 🟢 Register route
+// router.post("/register", async (req, res) => {
+//   try {
+//     const { fullName, email, password ,role} = req.body;
+//     console.log(req.body);
+    
+    
+
+//     if (!fullName || !email || !password,!role) {
+//       return res.status(400).json({ message: "All fields are required" });
+//     }
+
+//     const existingUser = await User.findOne({ email });
+//     if (existingUser) {
+//       return res.status(400).json({ message: "Email already exists" });
+//     }
+
+//     const newUser = new User({ fullName, email, password });
+//     await newUser.save();
+
+//     res.status(201).json({ message: "User registered successfully" });
+//   } catch (error) {
+//     console.error("❌ Registration Error:", error.message);
+//     res.status(500).json({ message: "Server error during registration" });
+//   }
+// });
+// POST /register
 router.post("/register", async (req, res) => {
   try {
-    const { fullName, email, password ,role} = req.body;
-    console.log(req.body);
-    
-    
+    const { fullName, email, password, role } = req.body;
 
-    if (!fullName || !email || !password) {
-      return res.status(400).json({ message: "All fields are required" });
+    if (!role) {
+      return res.status(400).json({ message: "Role is required" });
     }
 
-    const existingUser = await User.findOne({ email });
-    if (existingUser) {
+    const existing = await User.findOne({ email });
+    if (existing) {
       return res.status(400).json({ message: "Email already exists" });
     }
 
-    const newUser = new User({ fullName, email, password });
-    await newUser.save();
+    const user = new User({
+      fullName,
+      email,
+      password,
+      role,
+    });
 
-    res.status(201).json({ message: "User registered successfully" });
-  } catch (error) {
-    console.error("❌ Registration Error:", error.message);
-    res.status(500).json({ message: "Server error during registration" });
+    await user.save();
+    res.json({ message: "User registered successfully", user });
+
+  } catch (err) {
+    console.error("Registration error:", err.message);
+    res.status(500).json({ error: err.message });
   }
 });
+
 
 
 // router.post("/login", async (req, res) => {
@@ -194,26 +242,29 @@ router.post("/register", async (req, res) => {
 //     const { email, password } = req.body;
 
 //     const user = await User.findOne({ email });
-//     console.log(user);
-    
-
-//     if (!user) {
-//       return res.status(400).json({ error: "Invalid credentials" });
-//     }
+//     if (!user) return res.status(400).json({ message: "User not found" });
 
 //     const isMatch = await bcrypt.compare(password, user.password);
-//     if (!isMatch) {
-//       return res.status(400).json({ error: "Invalid credentials" });
-//     }
+//     if (!isMatch)
+//       return res.status(400).json({ message: "Invalid email or password" });
 
-//     res.json({ message: "Login successful", user });
-//   } catch (error) {
-//     console.error("Login error:", error);
-//     res.status(500).json({ error: "Server error during login" });
+//     // ⬇⬇ Generate JWT Token here
+//     const token = jwt.sign(
+//       { id: user._id, email: user.email },
+//       "MISHTHI",
+//       { expiresIn: "7d" }
+//     );
+
+//     res.json({
+//       message: "Login successful",
+//       token,
+//       user: { id: user._id, email: user.email },
+//     });
+
+//   } catch (err) {
+//     res.status(500).json({ message: "Server error", error: err.message });
 //   }
 // });
-
-
 
 router.post("/login", async (req, res) => {
   try {
@@ -226,23 +277,34 @@ router.post("/login", async (req, res) => {
     if (!isMatch)
       return res.status(400).json({ message: "Invalid email or password" });
 
-    // ⬇⬇ Generate JWT Token here
+    // Generate JWT
     const token = jwt.sign(
-      { id: user._id, email: user.email },
+      { id: user._id, email: user.email, role: user.role },
       "MISHTHI",
-      { expiresIn: "7d" }
+      { expiresIn: "1d" }
     );
 
     res.json({
       message: "Login successful",
       token,
-      user: { id: user._id, email: user.email },
+      user: {
+        id: user._id,
+        fullName: user.fullName,
+        email: user.email,
+        role: user.role,   
+      },
     });
 
   } catch (err) {
     res.status(500).json({ message: "Server error", error: err.message });
   }
 });
+
+
+
+
+
+
 router.post("/add-food", async (req, res) => {
   try {
     const { foodName, quantity, location, contact } = req.body;
@@ -287,76 +349,7 @@ router.get("/browse-food", async (req, res) => {
   }
 });
 
-// router.post("/add-request", async (req, res) => {
-//   try {
-//     const { foodId, receiverName } = req.body;
 
-//     if (!foodId || !receiverName) {
-//       return res.status(400).json({ message: "Missing required fields" });
-//     }
-
-//     // Find the food to get its details
-//     const food = await Food.findById(foodId);
-//     if (!food) {
-//       return res.status(404).json({ message: "Food not found" });
-//     }
-
-//     // Create a new request
-//     const newRequest = new Request({
-//       foodId,
-//       receiverName,
-//       donorName: food.donorName || "Unknown Donor",
-//       foodName: food.foodName,
-//       quantity: food.quantity,
-//       location: food.location,
-//     });
-
-//     await newRequest.save();
-//     res.status(201).json({ message: "Request added successfully", request: newRequest });
-//   } catch (error) {
-//     console.error("Error adding request:", error);
-//     res.status(500).json({ message: "Server error while adding request", error });
-//   }
-// });
-// router.post("/add-request", async (req, res) => {
-//   try {
-//     const { foodId, receiverName } = req.body;
-
-//     if (!foodId || !receiverName) {
-//       return res.status(400).json({ message: "Missing required fields" });
-//     }
-
-//     // Find the food item to copy its details
-//     const food = await Food.findById(foodId);
-//     if (!food) {
-//       return res.status(404).json({ message: "Food not found" });
-//     }
-
-//     // Create new request
-//     const newRequest = new Request({
-//       foodId,
-//       receiverName,
-//       donorName: food.donorName || "Unknown Donor",
-//       foodName: food.foodName || "Unnamed Food",
-//       quantity: food.quantity || "N/A",
-//       location: food.location || "Not specified",
-//       status: "Pending",
-//     });
-
-//     await newRequest.save();
-
-//     res.status(201).json({
-//       message: "Request added successfully",
-//       request: newRequest,
-//     });
-//   } catch (error) {
-//     console.error("❌ Error adding request:", error.message);
-//     res.status(500).json({
-//       message: "Server error while adding request",
-//       error: error.message,
-//     });
-//   }
-// });
 router.post("/add-request", async (req, res) => {
   try {
     const { foodId, receiverName } = req.body;
@@ -392,106 +385,76 @@ router.post("/add-request", async (req, res) => {
 router.post("/request-food", authenticateToken, async (req, res) => {
   try {
     const { foodId } = req.body;
-    const receiverId = req.user.id; // coming from JWT token
 
     if (!foodId) {
-      return res.status(400).json({ message: "foodId is required" });
+      return res.status(400).json({ message: "Food ID is required" });
     }
 
-    // Check if food exists
-    const foodItem = await Food.findById(foodId);
-    if (!foodItem) {
-      return res.status(404).json({ message: "Food item not found" });
-    }
-
-    // Save request
-    const newRequest = new FoodRequest({
+    const newRequest = await FoodRequest.create({
       foodId,
-      receiverId,
-      status: "Pending",
+      requesterId: req.user.id
     });
 
-    await newRequest.save();
-
-    res.json({ message: "Food request submitted successfully!" });
-
+    res.json({
+      success: true,
+      message: "Food requested successfully!",
+      request: newRequest,
+    });
   } catch (error) {
-    console.error("Error in /request-food:", error);
-    res.status(500).json({ message: "Server error", error: error.message });
+    console.error("❌ Error in /request-food:", error);
+    res.status(500).json({ message: "Server Error", error });
   }
 });
 
-// router.post("/request-food", authenticateToken, async (req, res) => {
-//   try {
-//     const { foodId } = req.body;
-//     const receiverId = req.user.id; // make sure token payload contains `id`
 
-//     if (!foodId) {
-//       return res.status(400).json({ message: "foodId is required" });
-//     }
 
-//     res.json({ message: "Food request submitted", receiverId });
-//   } catch (err) {
-//     res.status(500).json({ message: "Server error", error: err.message });
-//   }
-// });
 
 
 
 // router.get("/my-requests", authenticateToken, async (req, res) => {
 //   try {
-//     const userId = req.user.id;
-
-//     const requests = await FoodRequest.find({ receiverId: userId }).populate(
-//       "foodId"
-//     );
-
-//     res.json({
-//       requests: requests.map((r) => ({
-//         foodName: r.foodId?.foodName || "Unknown",
-//         quantity: r.foodId?.quantity || "N/A",
-//         donorName: r.foodId?.donorName || "Anonymous",
-//         location: r.foodId?.location || "Not provided",
-//         status: r.status || "Pending",
-//       })),
-//     });
+//     const requests = await FoodRequest.find({ receiverId: req.user.id });
+//     res.json({ requests });
 //   } catch (err) {
 //     res.status(500).json({ message: "Server error", error: err.message });
 //   }
 // });
 router.get("/my-requests", authenticateToken, async (req, res) => {
   try {
-    const requests = await FoodRequest.find({ receiverId: req.user.id });
+    const requests = await FoodRequest.find({ requesterId: req.user.id })
+      .populate("foodId");
 
-    res.json({ requests });
+    res.json({
+      requests: requests.map((r) => ({
+        foodName: r.foodId?.foodName || "Unknown",
+        quantity: r.foodId?.quantity || "N/A",
+        donorName: r.foodId?.donorName || "Anonymous",
+        location: r.foodId?.location || "Not provided",
+        status: r.status || "Pending",
+      }))
+    });
+
   } catch (err) {
     res.status(500).json({ message: "Server error", error: err.message });
   }
 });
 
-router.get("/my-listings", async (req, res) => {
-  try {
-    const { donorId } = req.query;
 
-    if (!donorId) {
-      return res.status(400).json({ message: "donorId is required" });
-    }
+router.get("/my-listings", authenticateToken, async (req, res) => {
+  try {
+    const donorId = req.user.id; 
 
     const foods = await Food.find({ donorId }).sort({ createdAt: -1 });
-
-    if (!foods.length) {
-      return res.status(404).json({ message: "No listings found for this donor" });
-    }
 
     res.status(200).json({ message: "Listings fetched successfully", foods });
   } catch (error) {
     console.error("Error fetching listings:", error);
-    res.status(500).json({ message: "Server error while fetching listings", error });
+    res.status(500).json({ message: "Server error while fetching listings" });
   }
 });
 
 
-router.get("/requests-received", async (req, res) => {
+router.get("/requests-received", authenticateToken, async (req, res) => {
   try {
     const { donorId } = req.query;
 
@@ -514,7 +477,7 @@ router.get("/requests-received", async (req, res) => {
   }
 });
 
-router.put("/requests/update-status/:id", async (req, res) => {
+router.put("/requests/update-status/:id",authenticateToken,  async (req, res) => {
   try {
     const { id } = req.params;
     const { status } = req.body;

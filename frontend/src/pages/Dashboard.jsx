@@ -517,8 +517,13 @@ import { AuthContext } from "../context/AuthContext";
 // import BrowseFood from "./receiver/BrowseFood";
 
 const Dashboard = () => {
-  const { user, logout } = useContext(AuthContext);
+  const { user,logout } = useContext(AuthContext);
   const navigate = useNavigate();
+  const handleLogout = () => {
+  logout(); 
+  window.location.href = "/login";
+};
+
 
   const styles = {
     container: {

@@ -505,7 +505,8 @@
 
 import React, { useState } from "react";
 import axios from "axios";
-import { Link } from "react-router-dom";
+import { Link,useNavigate } from "react-router-dom";
+
 
 const Register = () => {
   const [formData, setFormData] = useState({
@@ -514,6 +515,9 @@ const Register = () => {
     password: "",
     role: "",
   });
+
+  
+  const navigate = useNavigate(); 
 
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
@@ -529,6 +533,8 @@ const Register = () => {
       const res = await axios.post("http://localhost:3000/register", formData);
       alert(res.data.message || "User registered successfully!");
       setFormData({ fullName: "", email: "", password: "", role: "" });
+
+      navigate("/login");
        
 
     } catch (err) {
@@ -574,14 +580,14 @@ const Register = () => {
       width: "380px",
       textAlign: "center",
       zIndex: 2,
-      color: "#fff",
+      color: "white",
       animation: "fadeInCard 1s ease",
     },
     title: {
       fontSize: "2rem",
       fontWeight: "700",
       marginBottom: "30px",
-      color: "#fff",
+      color: "white",
     },
     input: {
       width: "100%",
@@ -592,7 +598,7 @@ const Register = () => {
       outline: "none",
       fontSize: "1rem",
       backgroundColor: "rgba(228, 220, 220, 0.59)",
-      color: "#fff",
+      color: "white",
       boxShadow: "inset 0 2px 5px rgba(0, 0, 0, 0.2)",
     },
     roleContainer: {
@@ -610,7 +616,7 @@ const Register = () => {
       background: active
         ? "linear-gradient(135deg, #22c55e, #16a34a)"
         : "transparent",
-      color: active ? "#fff" : "#22c55e",
+      color: active ? "white" : "#22c55e",
       fontWeight: "600",
       cursor: "pointer",
       transition: "all 0.3s ease",
@@ -632,7 +638,7 @@ const Register = () => {
     linkText: {
       marginTop: "20px",
       fontSize: "0.95rem",
-      color: "#ffffff",
+      color: "white",
     },
     loginLink: {
       color: "#16a34a",

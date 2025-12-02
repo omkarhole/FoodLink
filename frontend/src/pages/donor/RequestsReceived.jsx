@@ -200,7 +200,7 @@ const RequestsReceived = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-green-50 to-green-100 p-8">
+    <div className="min-h-screen bg-linear-to-br from-green-50 to-green-100 p-8">
       <h1 className="text-4xl font-extrabold text-center text-green-800 mb-12 drop-shadow-lg">
         📥 Requests Received
       </h1>

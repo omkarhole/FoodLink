@@ -431,8 +431,10 @@
 
 import React, { useState } from "react";
 import axios from "axios";
+import { useNavigate } from "react-router-dom";
 
 const AddFood = () => {
+  const navigate = useNavigate();
   const [formData, setFormData] = useState({
     foodName: "",
     quantity: "",
@@ -460,6 +462,9 @@ const AddFood = () => {
       if (res.status === 201) {
         setMessage("🍱 Food added successfully!");
         setFormData({ foodName: "", quantity: "", location: "", contact: "" });
+        setTimeout(() => {
+          navigate("/receiver/browse-food");
+        }, 1000);
       }
     } catch (error) {
       console.error("Error adding food:", error);

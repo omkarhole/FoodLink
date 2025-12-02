@@ -1,15 +1,22 @@
-// const mongoose = require("mongoose");
+
 import mongoose from "mongoose";
 import bcrypt from "bcryptjs";
+import { config } from "dotenv";
+config()
 
 
-// ✅ Connect to MongoDB (you can change DB name if needed)
-mongoose.connect("mongodb://127.0.0.1:27017/FoodLink", {
-  useNewUrlParser: true,
-  useUnifiedTopology: true,
-});
 
-// ✅ Define user schema
+// mongoose.connect("mongodb://127.0.0.1:27017/FoodLink", {
+//   useNewUrlParser: true,
+//   useUnifiedTopology: true,
+// });
+
+const db = process.env.MONGO_URI;
+console.log (db)
+mongoose
+  .connect(db)
+  .then(() => console.log("✅ MongoDB connected"))
+  .catch((err) => console.log("❌ MongoDB Error:", err));
 const userSchema = new mongoose.Schema(
   {
     fullName: {
@@ -33,16 +40,17 @@ const userSchema = new mongoose.Schema(
     role: {
       type: String,
       enum: ["donor", "receiver"],
-      default:"donor",
+      // default:"donor",
       required: true,
     },
+          
   
     
   },
   { timestamps: true }
 );
 
-// 🔒 Hash password before saving
+
 userSchema.pre("save", async function (next) {
   if (!this.isModified("password")) return next();
   const salt = await bcrypt.genSalt(10);
@@ -50,12 +58,12 @@ userSchema.pre("save", async function (next) {
   next();
 });
 
-// ✅ Method to compare entered password during login
+
 userSchema.methods.matchPassword = async function (enteredPassword) {
   return await bcrypt.compare(enteredPassword, this.password);
 };
 
-// ✅ Export model
-const User = mongoose.model("User", userSchema);
+
+const user = mongoose.model("user", userSchema);
 // module.exports = User;
-export default User;
+export default user;

@@ -31,7 +31,7 @@ const foodSchema = new mongoose.Schema(
     status: { type: String, default: "Available" },
     donorId: {
       type: mongoose.Schema.Types.ObjectId,
-      ref: "User",
+      ref: "user",
       required: false,
     },
   },
@@ -39,6 +39,6 @@ const foodSchema = new mongoose.Schema(
 );
 
 const Food = mongoose.model("Food", foodSchema);
-// module.exports = Food;
+
 export default Food;
 
