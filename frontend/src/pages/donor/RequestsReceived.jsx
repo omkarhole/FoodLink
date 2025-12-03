@@ -9,7 +9,9 @@ const RequestsReceived = () => {
   useEffect(() => {
     const fetchRequests = async () => {
       try {
-        const res = await axios.get("https://foodlink-0jeg.onrender.com/request-food");
+        const res = await axios.get(
+          "https://foodlink-0jeg.onrender.com/requests-received"
+        );
         setRequests(res.data);
       } catch (err) {
         console.error("Error fetching requests:", err);
