@@ -300,7 +300,7 @@
 import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import axios from "axios";
-// import user from "../../../backend/models/user";
+
 
 const Login = () => {
   const navigate = useNavigate();
@@ -400,7 +400,7 @@ const Login = () => {
     setError("");
     setLoading(true);
     try {
-      const response = await axios.post("https://foodlink-0jeg.onrender.com/request-food", {
+      const response = await axios.post("https://foodlink-0jeg.onrender.com/login", {
         email,
         password,
       });

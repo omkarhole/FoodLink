@@ -624,7 +624,7 @@ const MyRequests = () => {
       try {
         console.log("📡 Fetching requests...");
 
-        const res = await axios.get("https://foodlink-0jeg.onrender.com/request-food", {
+        const res = await axios.get("https://foodlink-0jeg.onrender.com/my-requests", {
           headers: {
             Authorization: `Bearer ${localStorage.getItem("token")}`,
           },
@@ -653,7 +653,7 @@ const MyRequests = () => {
   // Loading Screen
   if (loading) {
     return (
-      <div className="min-h-screen w-full 
+      <div className="min-h-screen w-screen 
     bg-linear-to-br from-emerald-900 via-emerald-800 to-emerald-700
     flex flex-col items-center py-14 px-6 text-white"
 >
