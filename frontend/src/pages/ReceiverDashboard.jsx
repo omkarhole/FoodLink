@@ -37,9 +37,7 @@ const ReceiverDashboard = () => {
     fetchData();
   }, []);
 
-  if (loading) {
-    return <p className="p-6 text-xl">Loading Dashboard...</p>;
-  }
+  
 
   return (
     <div className="p-6 bg-white w-screen h-screen">
