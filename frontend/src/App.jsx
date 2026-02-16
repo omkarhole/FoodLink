@@ -84,7 +84,7 @@ const App = () => {
           <Route path="/receiver-dashboard" element={<Protected><ReceiverDashboard /></Protected>} />
         </Routes>
       </div>
-    </Router>  
+    </Router>   
   );
 };
 
